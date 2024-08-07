@@ -9,7 +9,7 @@ def sorting_distributor_sprocket():
 
     # wb = xl.load_workbook(filename="./3.THB Small size conveyor chain  (March 2024-Rev. Nichiden Mul).xlsx", data_only=True)
 
-    sheet_names = wb.sheetnames
+    sheet_names = [sheet.title for sheet in wb.worksheets if sheet.sheet_state == 'visible']
 
     for each in sheet_names:
         print(each)
@@ -112,7 +112,7 @@ def sorting_small_size_conveyor():
     wb = xl.load_workbook(filename="./3.THB Small size conveyor chain  (March 2024-Rev. Nichiden Mul).xlsx",
                           data_only=True)
 
-    sheet_names = wb.sheetnames
+    sheet_names = [sheet.title for sheet in wb.worksheets if sheet.sheet_state == 'visible']
 
     for each in sheet_names:
         print(each)
@@ -227,11 +227,17 @@ class Adding_Price():
                 if each_line[0] == new_model or each_line[0] == old_model:
                     self.ws[f'R{i}'].value = each_line[2]
                     self.ws[f'W{i}'].value = 'Added!'
+                    try:
+                        each_line[3] = 'Yes'
+                    except:
+                        each_line.append('Yes')
                     break
 
         self.wb.save(filename='Output.xlsx')
         self.wb.close()
+        output_data = data
         print('Finished!')
+        return output_data
 
 class Mediant_Data_Creating():
     def __init__(self):
@@ -256,13 +262,13 @@ if __name__ == '__main__':
 
     data = data + data2
 
-    MDC = Mediant_Data_Creating()
-    MDC.create_excel(data=data)
-
     counter = 0
     for each in data:
         counter += 1
         print(counter, each)
 
     ad = Adding_Price()
-    ad.adding_data(data = data)
+    data = ad.adding_data(data = data)
+
+    MDC = Mediant_Data_Creating()
+    MDC.create_excel(data=data)
